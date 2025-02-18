@@ -1,0 +1,62 @@
+import { useState, useEffect } from "react";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+
+export default function ClassroomCheckApp() {
+  const [data, setData] = useState([]);
+  const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    // Fetch data from the backend
+    fetch("/api/classroom-checks")
+      .then((res) => res.json())
+      .then((data) => setData(data));
+  }, []);
+
+  const filteredData = data.filter((item) =>
+    item.room.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="p-4">
+      <Card className="p-4 mb-4">
+        <Input
+          placeholder="Search by room..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </Card>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>ID</TableHead>
+            <TableHead>Date</TableHead>
+            <TableHead>Room</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Notes</TableHead>
+            <TableHead>Inspector</TableHead>
+            <TableHead>Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredData.map((item) => (
+            <TableRow key={item.id}>
+              <TableCell>{item.id}</TableCell>
+              <TableCell>{item.date}</TableCell>
+              <TableCell>{item.room}</TableCell>
+              <TableCell>{item.status}</TableCell>
+              <TableCell>{item.notes}</TableCell>
+              <TableCell>{item.inspector}</TableCell>
+              <TableCell>
+                <Button>Edit</Button>
+                <Button variant="destructive">Delete</Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+}
